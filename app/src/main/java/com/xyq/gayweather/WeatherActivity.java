@@ -1,5 +1,6 @@
 package com.xyq.gayweather;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.LinkAddress;
@@ -23,6 +24,7 @@ import com.bumptech.glide.Glide;
 import com.xyq.gayweather.gson.Forecast;
 import com.xyq.gayweather.gson.Now;
 import com.xyq.gayweather.gson.Weather;
+import com.xyq.gayweather.service.AutoUpdateService;
 import com.xyq.gayweather.util.HttpUtil;
 import com.xyq.gayweather.util.Utility;
 
@@ -215,6 +217,10 @@ public class WeatherActivity extends AppCompatActivity {
         tvCarWash.setText(carWash);
         tvSport.setText(sport);
         weatherLayout.setVisibility(View.VISIBLE);
+
+        // 启动自动更新天气服务
+        Intent intent = new Intent(this, AutoUpdateService.class);
+        startService(intent);
     }
 
 
