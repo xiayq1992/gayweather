@@ -2,9 +2,11 @@ package com.xyq.gayweather.util;
 
 import android.text.TextUtils;
 
+import com.google.gson.Gson;
 import com.xyq.gayweather.db.City;
 import com.xyq.gayweather.db.County;
 import com.xyq.gayweather.db.Province;
+import com.xyq.gayweather.gson.Weather;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -12,7 +14,7 @@ import org.json.JSONObject;
 
 
 /**
- * 省市区数据处理
+ * 数据处理
  */
 public class Utility {
 
@@ -86,6 +88,21 @@ public class Utility {
             }
         }
         return false;
+    }
+
+    /**
+     * 解析天气实体类
+     */
+    public static Weather handleWeatherResponse(String response) {
+        try {
+            JSONObject jsonObject = new JSONObject(response);
+            JSONArray jsonArray = jsonObject.getJSONArray("HeWeather");
+            String weatherContent = jsonArray.getJSONObject(0).toString();
+            return new Gson().fromJson(weatherContent, Weather.class);
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 

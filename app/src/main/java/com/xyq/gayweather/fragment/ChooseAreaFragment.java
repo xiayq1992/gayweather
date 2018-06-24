@@ -2,6 +2,7 @@ package com.xyq.gayweather.fragment;
 
 import android.app.Fragment;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
@@ -15,7 +16,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.xyq.gayweather.Constants;
+import com.xyq.gayweather.MainActivity;
 import com.xyq.gayweather.R;
+import com.xyq.gayweather.WeatherActivity;
 import com.xyq.gayweather.db.City;
 import com.xyq.gayweather.db.County;
 import com.xyq.gayweather.db.Province;
@@ -90,6 +94,19 @@ public class ChooseAreaFragment extends Fragment {
                 } else if (currentLevel == QueryType.TYPE_CITY) {
                     selectedCity = cityList.get(position);
                     queryCounties();
+                } else if(currentLevel == QueryType.TYPE_COUNTY) {
+                    String weatherId = countyList.get(position).getWeatherId();
+                    if (getActivity() instanceof MainActivity) {
+                        Intent intent = new Intent(getActivity(), WeatherActivity.class);
+                        intent.putExtra("weather_id", weatherId);
+                        startActivity(intent);
+                        getActivity().finish();
+                    } else if (getActivity() instanceof WeatherActivity) {
+                        WeatherActivity activity = (WeatherActivity) getActivity();
+                        activity.drawerLayout.closeDrawers();
+                        activity.swipeRefreshLayout.setRefreshing(true);
+                        activity.requestWeather(weatherId);
+                    }
                 }
             }
         });
@@ -122,7 +139,7 @@ public class ChooseAreaFragment extends Fragment {
             }
             notifyAndSetLevel(QueryType.TYPE_PROVINCE);
         } else {
-            String address = "http://guolin.tech/api/china";
+            String address = Constants.BASE_URL + "china";
             queryFromServer(address, QueryType.TYPE_PROVINCE);
 
         }
@@ -145,7 +162,7 @@ public class ChooseAreaFragment extends Fragment {
             notifyAndSetLevel(QueryType.TYPE_CITY);
         } else {
             int provinceCode = selectedProvince.getProvinceCode();
-            String address = "http://guolin.tech/api/china/" + provinceCode;
+            String address = Constants.BASE_URL + "china/" + provinceCode;
             queryFromServer(address, QueryType.TYPE_CITY);
         }
     }
@@ -168,7 +185,7 @@ public class ChooseAreaFragment extends Fragment {
         } else {
             int provinceCode = selectedProvince.getProvinceCode();
             int cityCode = selectedCity.getCityCode();
-            String address = "http://guolin.tech/api/china/" + provinceCode + "/" + cityCode;
+            String address = Constants.BASE_URL + "china/" + provinceCode + "/" + cityCode;
             queryFromServer(address, QueryType.TYPE_COUNTY);
         }
     }
